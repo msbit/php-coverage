@@ -45,7 +45,10 @@ class Profiler
 
     static function profile_end(string $path, string ...$ignored)
     {
-        ob_end_clean();
+        if (ob_get_level() !== 0) {
+            ob_end_clean();
+        }
+
         $samples = phpdbg_end_oplog();
         $total = phpdbg_get_executable();
         $result = [];
