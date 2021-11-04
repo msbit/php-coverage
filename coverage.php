@@ -1,5 +1,4 @@
 #!/usr/bin/env phpdbg -qrr
-
 <?php
 
 if (!function_exists('phpdbg_start_oplog') || !function_exists('phpdbg_end_oplog') || !function_exists('phpdbg_get_executable')) {
