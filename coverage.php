@@ -29,7 +29,9 @@ function array_merge_numbered(array ...$arrays): array
 function profile(string $path, string ...$ignored): array
 {
     phpdbg_start_oplog();
+    ob_start();
     include $path;
+    ob_end_clean();
     $samples = phpdbg_end_oplog();
     $total = phpdbg_get_executable();
     $result = [];
