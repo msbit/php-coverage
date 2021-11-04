@@ -30,9 +30,19 @@ function array_merge_numbered(array ...$arrays): array
 
 function profile(string $path, string ...$ignored)
 {
+    profile_start();
+    include $path;
+    profile_end($path, ...$ignored);
+}
+
+function profile_start()
+{
     phpdbg_start_oplog();
     ob_start();
-    include $path;
+}
+
+function profile_end(string $path, string ...$ignored)
+{
     ob_end_clean();
     $samples = phpdbg_end_oplog();
     $total = phpdbg_get_executable();
