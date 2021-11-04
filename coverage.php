@@ -78,11 +78,7 @@ class Profiler
                 break;
             }
 
-            if (!array_key_exists($i, $coverage)) {
-                printf("%{$width}s| %s", '', $line);
-            } else {
-                printf("%{$width}d| %s", $coverage[$i], $line);
-            }
+            printf("%{$width}d| %s", $coverage[$i] ?? '', $line);
         }
 
         fclose($file);
