@@ -70,7 +70,7 @@ class Profiler
         printf("%s\n", $path);
 
         $max_count = max($coverage);
-        $width = ceil(log10($max_count)) + 1;
+        $width = max([ceil(log10($max_count)) + 1, 4]);
 
         for ($i = 1; !feof($file); $i++) {
             $line = fgets($file);
@@ -79,9 +79,9 @@ class Profiler
             }
 
             if (!array_key_exists($i, $coverage)) {
-                printf("%{$width}s| %s", '', $line);
+                printf("%4d|%{$width}s| %s", $i, '', $line);
             } else {
-                printf("%{$width}d| %s", $coverage[$i], $line);
+                printf("%4d|%{$width}d| %s", $i, $coverage[$i], $line);
             }
         }
 

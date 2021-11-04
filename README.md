@@ -30,13 +30,13 @@ which produces:
 
 ```
 /Users/tom/Development/msbit/php-coverage/hello.php
- | <?php
- | 
-1| if (0) {
-0|     echo "bye\n";
- | } else {
-1|     echo "hello\n";
- | }
+   1|    | <?php
+   2|    | 
+   3|   1| if (0) {
+   4|   0|     echo "bye\n";
+   5|    | } else {
+   6|   1|     echo "hello\n";
+   7|    | }
 ```
 
 showing that the first leg of the `if` statement is executable, but skipped.
@@ -83,27 +83,28 @@ which produces:
 
 ```
 /Users/tom/Development/msbit/php-coverage/function.php
-   | <?php
-   | 
-   | function doThing($count) {
- 23|   for ($i = 0; $i < $count; $i++) {
- 20|     if ($i % 3 === 0) {
-  4|       echo "hello\n";
-   |     }
-   |   }
-   | }
-   | 
-  3| doThing(10);
-   | 
-  1| require 'looping.php';
+   1|    | <?php
+   2|    | 
+   3|    | function doThing($count)
+   4|    | {
+   5|  23|     for ($i = 0; $i < $count; $i++) {
+   6|  20|         if ($i % 3 === 0) {
+   7|   4|             echo "hello\n";
+   8|    |         }
+   9|    |     }
+  10|    | }
+  11|    | 
+  12|   3| doThing(10);
+  13|    | 
+  14|   1| require 'looping.php';
 /Users/tom/Development/msbit/php-coverage/looping.php
-   | <?php
-   | 
- 23| for ($i = 0; $i < 10; $i++) {
- 20|   if ($i % 3 === 0) {
-  4|     echo "hello\n";
-   |   }
-   | }
+   1|    | <?php
+   2|    | 
+   3|  23| for ($i = 0; $i < 10; $i++) {
+   4|  20|     if ($i % 3 === 0) {
+   5|   4|         echo "hello\n";
+   6|    |     }
+   7|    | }
 ```
 
 showing that, in both files, the body of the `if` statement is executed only on a subset of the loop iterations.
