@@ -28,50 +28,53 @@ function array_merge_numbered(array ...$arrays): array
     return $result;
 }
 
-function profile(string $path, string ...$ignored)
+class Profiler
 {
-    profile_start();
-    include $path;
-    profile_end($path, ...$ignored);
-}
-
-function profile_start()
-{
-    phpdbg_start_oplog();
-    ob_start();
-}
-
-function profile_end(string $path, string ...$ignored)
-{
-    ob_end_clean();
-    $samples = phpdbg_end_oplog();
-    $total = phpdbg_get_executable();
-    $result = [];
-
-    foreach (array_diff(array_keys($total), $ignored) as $path) {
-        $result[$path] = array_merge_numbered($total[$path], $samples[$path]);
+    static function profile(string $path, string ...$ignored)
+    {
+        static::profile_start();
+        include $path;
+        static::profile_end($path, ...$ignored);
     }
 
-    foreach ($result as $path => $coverage) {
-        $file = fopen($path, 'r');
-        assert($file !== false, "could not `fopen` {$path}");
+    static function profile_start()
+    {
+        phpdbg_start_oplog();
+        ob_start();
+    }
 
-        printf("%s\n", $path);
+    static function profile_end(string $path, string ...$ignored)
+    {
+        ob_end_clean();
+        $samples = phpdbg_end_oplog();
+        $total = phpdbg_get_executable();
+        $result = [];
 
-        for ($i = 1; !feof($file); $i++) {
-            $line = fgets($file);
-            if ($line === false) {
-                break;
-            }
-
-            if (!array_key_exists($i, $coverage)) {
-                printf("    | %s", $line);
-            } else {
-                printf("%4d| %s", $coverage[$i], $line);
-            }
+        foreach (array_diff(array_keys($total), $ignored) as $path) {
+            $result[$path] = array_merge_numbered($total[$path], $samples[$path]);
         }
 
-        fclose($file);
+        foreach ($result as $path => $coverage) {
+            $file = fopen($path, 'r');
+            assert($file !== false, "could not `fopen` {$path}");
+
+            printf("%s\n", $path);
+
+            for ($i = 1; !feof($file); $i++) {
+                $line = fgets($file);
+                if ($line === false) {
+                    break;
+                }
+
+                if (!array_key_exists($i, $coverage)) {
+                    printf("    | %s", $line);
+                } else {
+                    printf("%4d| %s", $coverage[$i], $line);
+                }
+            }
+
+            fclose($file);
+        }
     }
 }
 
@@ -80,4 +83,4 @@ assert($self !== false, "could not get `realpath` for {$argv[0]}");
 $path = realpath($argv[1]);
 assert($path !== false, "could not get `realpath` for {$argv[1]}");
 
-profile($path, $self);
+Profiler::profile($path, $self);
