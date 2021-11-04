@@ -1,6 +1,8 @@
 #!/usr/bin/env phpdbg -qrr
 <?php
 
+declare(strict_types=1);
+
 if (!function_exists('phpdbg_start_oplog') || !function_exists('phpdbg_end_oplog') || !function_exists('phpdbg_get_executable')) {
     print("Must be run via `phpdbg`\n");
     exit(1);
