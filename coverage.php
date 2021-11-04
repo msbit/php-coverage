@@ -58,26 +58,34 @@ class Profiler
         }
 
         foreach ($result as $path => $coverage) {
-            $file = fopen($path, 'r');
-            assert($file !== false, "could not `fopen` {$path}");
+            static::render_coverage($path, $coverage);
+        }
+    }
 
-            printf("%s\n", $path);
+    static function render_coverage(string $path, array $coverage)
+    {
+        $file = fopen($path, 'r');
+        assert($file !== false, "could not `fopen` {$path}");
 
-            for ($i = 1; !feof($file); $i++) {
-                $line = fgets($file);
-                if ($line === false) {
-                    break;
-                }
+        printf("%s\n", $path);
 
-                if (!array_key_exists($i, $coverage)) {
-                    printf("    | %s", $line);
-                } else {
-                    printf("%4d| %s", $coverage[$i], $line);
-                }
+        $max_count = max($coverage);
+        $width = ceil(log10($max_count)) + 1;
+
+        for ($i = 1; !feof($file); $i++) {
+            $line = fgets($file);
+            if ($line === false) {
+                break;
             }
 
-            fclose($file);
+            if (!array_key_exists($i, $coverage)) {
+                printf("%{$width}s| %s", '', $line);
+            } else {
+                printf("%{$width}d| %s", $coverage[$i], $line);
+            }
         }
+
+        fclose($file);
     }
 }
 
