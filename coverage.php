@@ -28,7 +28,7 @@ function array_merge_numbered(array ...$arrays): array
     return $result;
 }
 
-function profile(string $path, string ...$ignored): array
+function profile(string $path, string ...$ignored)
 {
     phpdbg_start_oplog();
     ob_start();
@@ -37,10 +37,32 @@ function profile(string $path, string ...$ignored): array
     $samples = phpdbg_end_oplog();
     $total = phpdbg_get_executable();
     $result = [];
+
     foreach (array_diff(array_keys($total), $ignored) as $path) {
         $result[$path] = array_merge_numbered($total[$path], $samples[$path]);
     }
-    return $result;
+
+    foreach ($result as $path => $coverage) {
+        $file = fopen($path, 'r');
+        assert($file !== false, "could not `fopen` {$path}");
+
+        printf("%s\n", $path);
+
+        for ($i = 1; !feof($file); $i++) {
+            $line = fgets($file);
+            if ($line === false) {
+                break;
+            }
+
+            if (!array_key_exists($i, $coverage)) {
+                printf("    | %s", $line);
+            } else {
+                printf("%4d| %s", $coverage[$i], $line);
+            }
+        }
+
+        fclose($file);
+    }
 }
 
 $self = realpath($argv[0]);
@@ -48,24 +70,4 @@ assert($self !== false, "could not get `realpath` for {$argv[0]}");
 $path = realpath($argv[1]);
 assert($path !== false, "could not get `realpath` for {$argv[1]}");
 
-foreach (profile($path, $self) as $path => $coverage) {
-    $file = fopen($path, 'r');
-    assert($file !== false, "could not `fopen` {$path}");
-
-    printf("%s\n", $path);
-
-    for ($i = 1; !feof($file); $i++) {
-        $line = fgets($file);
-        if ($line === false) {
-            break;
-        }
-
-        if (!array_key_exists($i, $coverage)) {
-            printf("    | %s", $line);
-        } else {
-            printf("%4d| %s", $coverage[$i], $line);
-        }
-    }
-
-    fclose($file);
-}
+profile($path, $self);
